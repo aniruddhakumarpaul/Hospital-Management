@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard | LifeCare AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #f0f2f5; }
+        .sidebar { background: #1a237e; min-height: 100vh; color: white; padding: 20px; }
+        .nav-link { color: rgba(255,255,255,0.7); transition: all 0.3s; margin-bottom: 10px; border-radius: 10px; }
+        .nav-link:hover, .nav-link.active { color: white; background: rgba(255,255,255,0.1); }
+        .main-content { padding: 30px; }
+        .card { border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2 sidebar d-none d-md-block">
+            <h4 class="mb-5"><i class="fas fa-hospital-user me-2"></i> LifeCare</h4>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link active" href="#"><i class="fas fa-columns me-2"></i> Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-10 main-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex align-items-center">
+                    <a href="index.html" class="btn btn-outline-primary btn-sm rounded-pill me-3"><i class="fas fa-home"></i> Home</a>
+                    <h2 class="mb-0">Medical Officer Dashboard</h2>
+                </div>
+                <div class="text-muted"><span id="current-date"></span></div>
+            </div>
+
+            <div class="card p-4 border-0 shadow-sm border-start border-danger border-5 mb-4">
+                <h5 class="mb-4 text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Emergency Priority</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>Record</th>
+                                <th>Name</th>
+                                <th>Specialist Assigned</th>
+                                <th>Symptoms</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="emergencyTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card p-4 border-0 shadow-sm">
+                <h5 class="mb-4 text-primary"><i class="fas fa-list-ol me-2"></i>General Queue</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Token</th>
+                                <th>Record</th>
+                                <th>Name</th>
+                                <th>Doctor</th>
+                                <th>Specialization</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="generalTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updateModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Update Treatment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3"><label>Diagnosis</label><input type="text" id="modalDiagnosis" class="form-control"></div>
+                <div class="mb-3"><label>Prescription</label><textarea id="modalPrescription" class="form-control" rows="4"></textarea></div>
+                <input type="hidden" id="modalPatientId">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="submitTreatmentUpdate()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    if (localStorage.getItem('doctorLoggedIn') !== 'true') window.location.href = 'doctor-login.html';
+    const API_URL = '/api/patients';
+    document.getElementById('current-date').innerText = new Date().toDateString();
+
+    let patientsGlobal = [];
+
+    async function loadPatients() {
+        try {
+            const response = await fetch(API_URL);
+            const patients = await response.json();
+            patientsGlobal = patients;
+            const emergencyTbody = document.getElementById('emergencyTableBody');
+            const generalTbody = document.getElementById('generalTableBody');
+            
+            emergencyTbody.innerHTML = '';
+            generalTbody.innerHTML = '';
+
+            patients.forEach(p => {
+                const row = `
+                    <tr>
+                        <td><strong>${p.isEmergency ? '🚨' : '#' + p.tokenNumber}</strong></td>
+                        <td><small class="badge bg-light text-dark">${p.recordNumber}</small></td>
+                        <td>
+                            <div class="fw-bold">${p.name}</div>
+                            ${p.aiSuggestedSpecialization ? `<small class="text-info d-block" style="font-size: 0.7rem;"><i class="fas fa-magic me-1"></i>AI Suggested: ${p.aiSuggestedSpecialization}</small>` : ''}
+                        </td>
+                        <td>${p.doctorAssigned}</td>
+                        <td><span class="badge bg-info-subtle text-info">${p.doctorSpecialization}</span></td>
+                        <td><button class="btn btn-sm btn-primary rounded-pill px-3" onclick="openUpdateModalById(${p.id})">Treat</button></td>
+                    </tr>
+                `;
+                
+                if (p.isEmergency) {
+                    emergencyTbody.innerHTML += row;
+                } else {
+                    generalTbody.innerHTML += row;
+                }
+            });
+
+            if (emergencyTbody.innerHTML === '') {
+                emergencyTbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">No active emergency cases.</td></tr>';
+            }
+        } catch (e) { console.error("Error loading dashboard", e); }
+    }
+
+    function openUpdateModalById(id) {
+        const p = patientsGlobal.find(i => i.id == id);
+        if (!p) return;
+        document.getElementById('modalPatientId').value = p.id;
+        document.getElementById('modalDiagnosis').value = p.predictedDisease;
+        document.getElementById('modalPrescription').value = p.prescription || "";
+        new bootstrap.Modal(document.getElementById('updateModal')).show();
+    }
+
+    async function submitTreatmentUpdate() {
+        const id = document.getElementById('modalPatientId').value;
+        await fetch(`${API_URL}/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                predictedDisease: document.getElementById('modalDiagnosis').value, 
+                prescription: document.getElementById('modalPrescription').value 
+            })
+        });
+        bootstrap.Modal.getInstance(document.getElementById('updateModal')).hide();
+        loadPatients();
+    }
+
+    function logout() { localStorage.removeItem('doctorLoggedIn'); window.location.href = 'doctor-login.html'; }
+    loadPatients();
+</script>
+</body>
+</html>

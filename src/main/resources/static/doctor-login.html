@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Login | LifeCare AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #f4f7f6; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .login-card { width: 100%; max-width: 400px; padding: 40px; background: white; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+        .btn-primary { background: #0061f2; border: none; padding: 12px; border-radius: 10px; font-weight: 600; }
+        .brand-logo { color: #0061f2; font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <div class="brand-logo"><i class="fas fa-user-md me-2"></i> LifeCare AI</div>
+    <h5 class="text-center mb-4">Medical Personnel Login</h5>
+    <form id="loginForm">
+        <div class="mb-3">
+            <label class="form-label">Doctor Access Code</label>
+            <input type="password" id="password" class="form-control" placeholder="Enter Access Code" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Login to Dashboard</button>
+    </form>
+    <div id="loginMessage" class="text-danger mt-3 text-center small"></div>
+    <hr>
+    <center><a href="index.html" class="text-muted text-decoration-none small"><i class="fas fa-home me-1"></i> Back to Home</a></center>
+</div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const password = document.getElementById('password').value;
+        const msgDiv = document.getElementById('loginMessage');
+        
+        try {
+            const response = await fetch('/api/patients/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+            
+            if (response.ok) {
+                localStorage.setItem('doctorLoggedIn', 'true');
+                window.location.href = 'doctor-dashboard.html';
+            } else {
+                msgDiv.innerText = "❌ Invalid Access Code";
+            }
+        } catch (error) {
+            msgDiv.innerText = "❌ Server error. Try again.";
+        }
+    });
+</script>
+
+</body>
+</html>
