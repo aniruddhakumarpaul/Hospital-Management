@@ -10,12 +10,12 @@ public class WebController implements ErrorController {
 
     @GetMapping("/")
     public String home() {
-        return "forward:/index.html";
+        return "redirect:/index.html";
     }
 
     @RequestMapping("/error")
     public String handleError() {
         // Fallback to index on any 404 or unhandled error
-        return "forward:/index.html";
+        return "redirect:/index.html";
     }
 }
