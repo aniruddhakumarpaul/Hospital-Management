@@ -46,9 +46,15 @@ public class PatientServiceImpl implements PatientService {
     @Transactional
     public PatientDTO updatePatient(Long id, PatientDTO patientDetails) {
         return patientRepository.findById(id).map(p -> {
-            p.setPredictedDisease(patientDetails.getPredictedDisease());
-            p.setPrescription(patientDetails.getPrescription());
-            p.setIllness(patientDetails.getIllness());
+            if (patientDetails.getPredictedDisease() != null) {
+                p.setPredictedDisease(patientDetails.getPredictedDisease());
+            }
+            if (patientDetails.getPrescription() != null) {
+                p.setPrescription(patientDetails.getPrescription());
+            }
+            if (patientDetails.getIllness() != null) {
+                p.setIllness(patientDetails.getIllness());
+            }
             Patient updated = patientRepository.save(p);
             return PatientDTO.fromEntity(updated);
         }).orElse(null);

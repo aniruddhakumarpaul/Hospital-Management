@@ -427,7 +427,13 @@
     const aiIcon = document.getElementById('aiSuggestionIcon');
     const suggestedDeptText = document.getElementById('suggestedDept');
     
-    const DEPARTMENTS = ["Cardiology", "Pediatrics", "Ophthalmology", "Orthopedics", "General Medicine", "Dermatology"];
+    // MUST match DoctorAIService KNOWLEDGE_BASE keys exactly
+    const DEPARTMENTS = [
+        "General Physician", "Cardiologist", "Gastroenterologist", "Orthopedic Surgeon", 
+        "Dermatologist", "Psychiatrist", "Ophthalmologist", "ENT Specialist", 
+        "Gynecologist", "Urologist", "Endocrinologist", "Pulmonologist", 
+        "Neurologist", "Nephrologist", "Pediatrician", "Oncologist"
+    ];
     const CRITICAL_KEYWORDS = ["chest", "breath", "bleed", "seizure", "stroke", "unconscious", "heart"];
     let currentSuggestion = "";
     let isCritical = false;
@@ -497,7 +503,11 @@
         if (!currentSuggestion) return;
         
         if (isCritical) {
-            document.getElementById('isEmergency').checked = true;
+            // Only change it if it's currently false
+            const emergencyCheckbox = document.getElementById('isEmergency');
+            if (!emergencyCheckbox.checked) {
+                emergencyCheckbox.checked = true;
+            }
             suggestedDeptText.innerHTML = `<i class="fas fa-ambulance me-1"></i> EMERGENCY MODE ACTIVATED`;
         } else {
             suggestedDeptText.innerHTML = `<i class="fas fa-check me-1"></i> ${currentSuggestion} Selected`;
@@ -508,6 +518,19 @@
         const illnessField = document.getElementById('illness');
         illnessField.style.borderColor = isCritical ? 'var(--bs-danger)' : 'var(--secondary)';
     };
+</script>
+<script>
+// Add this right before the closing </body> tag in terminal.html
+document.addEventListener("DOMContentLoaded", function() {
+    let hash = window.location.hash;
+    if (hash) {
+        // Find the tab button that targets this hash
+        let tabButton = document.querySelector(`button[data-bs-target="${hash}"]`);
+        if (tabButton) {
+            new bootstrap.Tab(tabButton).show();
+        }
+    }
+});
 </script>
 </body>
 </html>
