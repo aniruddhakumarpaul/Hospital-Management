@@ -1,5 +1,7 @@
 package com.hospitalmanage.hospital.management.system;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class PatientDTO {
     private Long id;
     private String name;
@@ -18,7 +20,12 @@ public class PatientDTO {
     private String prescription;
     private String aiAnalysis;
     private String wellnessAdvice;
+    @JsonProperty("isEmergency")
     private boolean isEmergency;
+    private String status;
+    private boolean isPaid;
+    private String treatmentDate;
+    private long patientsAhead;
 
     // Getters and Setters
     public Long getId() { return id; }
@@ -57,6 +64,14 @@ public class PatientDTO {
     public void setWellnessAdvice(String wellnessAdvice) { this.wellnessAdvice = wellnessAdvice; }
     public boolean isEmergency() { return isEmergency; }
     public void setEmergency(boolean emergency) { isEmergency = emergency; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    public boolean isPaid() { return isPaid; }
+    public void setPaid(boolean paid) { isPaid = paid; }
+    public String getTreatmentDate() { return treatmentDate; }
+    public void setTreatmentDate(String treatmentDate) { this.treatmentDate = treatmentDate; }
+    public long getPatientsAhead() { return patientsAhead; }
+    public void setPatientsAhead(long patientsAhead) { this.patientsAhead = patientsAhead; }
 
     // Static mapping methods
     public static PatientDTO fromEntity(Patient patient) {
@@ -80,6 +95,9 @@ public class PatientDTO {
         dto.setAiAnalysis(patient.getAiAnalysis());
         dto.setWellnessAdvice(patient.getWellnessAdvice());
         dto.setEmergency(patient.isEmergency());
+        dto.setStatus(patient.getStatus());
+        dto.setPaid(patient.isPaid());
+        dto.setTreatmentDate(patient.getTreatmentDate());
         return dto;
     }
 
@@ -105,6 +123,15 @@ public class PatientDTO {
         entity.setAiAnalysis(this.aiAnalysis);
         entity.setWellnessAdvice(this.wellnessAdvice);
         entity.setEmergency(this.isEmergency);
+        
+        // Lifecycle Protection: Only overwrite if DTO has values
+        if (this.status != null) {
+            entity.setStatus(this.status);
+        }
+        entity.setPaid(this.isPaid);
+        if (this.treatmentDate != null) {
+            entity.setTreatmentDate(this.treatmentDate);
+        }
         return entity;
     }
 }

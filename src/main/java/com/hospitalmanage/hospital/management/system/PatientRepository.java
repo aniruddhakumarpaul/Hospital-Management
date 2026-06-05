@@ -10,7 +10,8 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     // Find patient by PAT-XXXX ID
     Optional<Patient> findByRecordNumber(String recordNumber);
 
-    // Find patient history by phone number
+    // Find patient history by phone number (Flexible suffix matching for user convenience)
+    @org.springframework.data.jpa.repository.Query("SELECT p FROM Patient p WHERE p.phoneNumber LIKE %:phoneNumber")
     java.util.List<Patient> findByPhoneNumber(String phoneNumber);
 
     // Count existing patients for a doctor (Used for Token Number 1, 2, 3...)
@@ -22,6 +23,15 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     // DB-level sorting for efficient dashboard rendering
     java.util.List<Patient> findAllByOrderByIsEmergencyDescTokenNumberAsc();
 
+    // Query to filter active vs treated patients for specific doctors
+    java.util.List<Patient> findByDoctorAssignedAndStatus(String doctorAssigned, String status);
+
     // Stats counter for dashboard
     long countByDoctorSpecialization(String doctorSpecialization);
+
+    // Stats counter for dashboard (Waiting patients only)
+    long countByDoctorSpecializationAndStatusNot(String doctorSpecialization, String status);
+
+    // Dynamic Queue Logic: Count patients IN FRONT of this token who are not yet treated
+    long countByDoctorSpecializationAndStatusNotAndTokenNumberLessThan(String doctorSpecialization, String status, int tokenNumber);
 }

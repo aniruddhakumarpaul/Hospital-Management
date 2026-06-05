@@ -11,4 +11,6 @@ public interface PatientService {
     List<PatientDTO> findByPhoneNumber(String phoneNumber);
     PatientDTO findByRecordNumber(String recordNumber);
     boolean authenticateDoctor(String password);
+    PatientDTO settleBill(Long id);
+    List<PatientDTO> findActiveByDoctor(String doctorName);
 }

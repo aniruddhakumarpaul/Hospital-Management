@@ -33,7 +33,13 @@ public class Patient {
     private String wellnessAdvice;
 
     // Emergency Flag
+    @com.fasterxml.jackson.annotation.JsonProperty("isEmergency")
     private boolean isEmergency;
+
+    // Lifecycle Status
+    private String status = "REGISTERED"; // REGISTERED, UNDER_TREATMENT, TREATED
+    private boolean isPaid = false;
+    private String treatmentDate;
 
     // --- CONSTRUCTORS ---
 
@@ -105,4 +111,13 @@ public class Patient {
 
     public String getWellnessAdvice() { return wellnessAdvice; }
     public void setWellnessAdvice(String wellnessAdvice) { this.wellnessAdvice = wellnessAdvice; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    public boolean isPaid() { return isPaid; }
+    public void setPaid(boolean paid) { isPaid = paid; }
+
+    public String getTreatmentDate() { return treatmentDate; }
+    public void setTreatmentDate(String treatmentDate) { this.treatmentDate = treatmentDate; }
 }

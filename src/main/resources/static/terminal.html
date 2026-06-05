@@ -14,17 +14,29 @@
         
         .hero-section { 
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); 
-            color: white; padding: 80px 0 100px; 
-            border-bottom-left-radius: 60px; border-bottom-right-radius: 60px;
+            color: white; 
+            padding: clamp(40px, 8vw, 80px) 0 clamp(60px, 12vw, 100px); 
+            border-bottom-left-radius: clamp(30px, 10vw, 60px); 
+            border-bottom-right-radius: clamp(30px, 10vw, 60px);
             box-shadow: 0 15px 30px rgba(0,97,242,0.1);
         }
         
-        .card { border: none; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); transition: transform 0.3s ease; }
-        .card:hover { transform: translateY(-5px); }
-        
-        .btn-premium { padding: 12px 30px; border-radius: 50px; font-weight: 600; transition: all 0.3s ease; border: none; }
+        .btn-premium { padding: 12px 30px; border-radius: 50px; font-weight: 600; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: none; }
         .btn-primary-premium { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
-        .btn-primary-premium:hover { opacity: 0.9; transform: scale(1.02); color: white; }
+        .btn-primary-premium:hover { opacity: 0.9; transform: translateY(-3px) scale(1.02); color: white; box-shadow: 0 10px 20px rgba(0,97,242,0.15); }
+        .btn-primary-premium:active { transform: scale(0.95); transition: all 0.1s; }
+        
+        /* Design Spell: Card Entry Animation */
+        .card { 
+            border: none; border-radius: 25px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04); 
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); 
+            animation: slideInUp 0.6s ease-out backwards;
+        }
+        @keyframes slideInUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
         
         .form-control, .form-select { border-radius: 15px; padding: 12px 20px; border: 1px solid #eee; background: #fdfdfd; }
         .form-control:focus { box-shadow: 0 0 0 4px rgba(0,97,242,0.1); border-color: var(--primary); }
@@ -36,15 +48,85 @@
         
         #receipt-content { font-family: 'Poppins', sans-serif; }
         .token-circle { width: 120px; height: 120px; border: 8px solid var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: var(--primary); }
+
+        /* Outstanding Balance Alert Style */
+        .unpaid-alert-modal .modal-content {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border: none;
+            border-radius: 30px;
+            box-shadow: 0 25px 60px -15px rgba(220, 53, 69, 0.3);
+        }
+        .emergency-icon-pulse {
+            animation: emergencyPulse 2s infinite;
+        }
+        @keyframes emergencyPulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        }
+        .form-check-input:checked {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            animation: pulse-red 0.5s;
+        }
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        }
+        .emergency-pill {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+        .btn-pay-now {
+            background: linear-gradient(135deg, #dc3545, #fd7e14);
+            color: white;
+            border: none;
+            font-weight: bold;
+        }
+
+        /* Mobile Optimization: Cleaner & Smaller */
+        @media (max-width: 768px) {
+            html { font-size: 14px; }
+            .hero-section { padding: 30px 0 50px; border-radius: 0 0 40px 40px; }
+            .hero-home-btn { 
+                position: relative !important; 
+                top: 0 !important; 
+                margin-bottom: 25px; 
+                width: 100%; 
+                display: block;
+                background: rgba(255,255,255,0.1) !important;
+                border: 1px solid rgba(255,255,255,0.2) !important;
+                border-radius: 12px !important;
+                font-weight: 500;
+            }
+            .nav-pills { flex-wrap: wrap; }
+            .nav-item { flex-basis: 48%; }
+            .billing-nav-item { flex-basis: 100%; margin-top: 10px; }
+            .p-4 { padding: 1.5rem !important; }
+        }
     </style>
 </head>
 <body>
 
 <div class="hero-section text-center mb-5">
     <div class="container animate__animated animate__fadeIn position-relative">
-        <a href="index.html" class="btn btn-outline-light rounded-pill position-absolute top-0 start-0 mt-2 px-3 border-0"><i class="fas fa-home me-2"></i>Home</a>
-        <h1 class="display-3 fw-bold mb-2"><i class="fas fa-hospital-symbol me-3"></i>LifeCare AI</h1>
-        <p class="lead opacity-75 fs-4">Advanced Self-Service Patient Kiosk</p>
+        <!-- Desktop Home Button (Original Position) -->
+        <a href="index.html" class="btn btn-outline-light rounded-pill position-absolute top-0 start-0 mt-2 px-3 border-0 d-none d-md-block transition-all"><i class="fas fa-home me-2"></i>Home</a>
+        
+        <!-- Wide Home Button for Mobile (User requested above logo) -->
+        <a href="index.html" class="btn btn-outline-light hero-home-btn py-2 px-3 border-0 d-md-none"><i class="fas fa-home me-2"></i>Back to Home</a>
+        
+        <h1 class="display-3 fw-bold mb-2" style="font-size: clamp(2.2rem, 8vw, 4rem);"><i class="fas fa-hospital-symbol me-3"></i>LifeCare AI</h1>
+        <p class="lead opacity-75 fs-4" style="font-size: clamp(1rem, 4vw, 1.3rem);">Advanced Self-Service Patient Kiosk</p>
         <div id="ai-status" class="badge bg-warning text-dark animate__animated animate__pulse animate__infinite">
             <i class="fas fa-robot me-2"></i>AI Assistant loading...
         </div>
@@ -81,7 +163,7 @@
                     </div>
                 </div>
                 <div class="mt-auto p-3 text-center bg-light rounded-4">
-                    <small class="text-muted"><i class="fas fa-clock me-1"></i> Avg. Wait Time: 15-20m per patient</small>
+                    <small class="text-muted" id="avgWaitTime"><i class="fas fa-clock me-1"></i> Avg. Wait Time: 15-20m per patient</small>
                 </div>
             </div>
         </div>
@@ -89,13 +171,20 @@
         <!-- Registration & Search -->
         <div class="col-lg-7">
             <div class="card p-4 mb-4 border-0 shadow-sm">
-                <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4 gap-3">
                     <h4 class="text-primary mb-0"><i class="fas fa-id-card me-2"></i> Patient Services</h4>
-                    <nav>
-                        <div class="nav nav-pills" id="nav-tab" role="tablist">
-                            <button class="nav-link active rounded-pill px-4" id="nav-reg-tab" data-bs-toggle="tab" data-bs-target="#nav-reg" type="button" role="tab">New Patient</button>
-                            <button class="nav-link rounded-pill px-3 mx-1" id="nav-search-tab" data-bs-toggle="tab" data-bs-target="#nav-search" type="button" role="tab">Track My Status</button>
-                            <button class="nav-link rounded-pill px-4" id="nav-billing-tab" data-bs-toggle="tab" data-bs-target="#nav-billing" type="button" role="tab"><i class="fas fa-file-invoice-dollar me-2"></i>Billing</button>
+                    <nav class="pb-2">
+                        <div class="nav nav-pills d-flex align-items-center gap-2" id="nav-tab" role="tablist">
+                            <button class="nav-link active rounded-pill px-3 flex-grow-1 flex-md-grow-0" id="nav-reg-tab" data-bs-toggle="tab" data-bs-target="#nav-reg" type="button" role="tab">New Registration</button>
+                            <button class="nav-link rounded-pill px-3 flex-grow-1 flex-md-grow-0" id="nav-search-tab" data-bs-toggle="tab" data-bs-target="#nav-search" type="button" role="tab">Track My ID</button>
+                            
+                            <!-- Desktop Billing Tab -->
+                            <button class="nav-link rounded-pill px-3 d-none d-md-block" id="nav-billing-tab-desk" data-bs-toggle="tab" data-bs-target="#nav-billing" type="button" role="tab">Billing</button>
+                            
+                            <!-- Mobile Billing CTA (User requested below/prominent) -->
+                            <button class="nav-link rounded-pill px-4 billing-nav-item w-100 d-md-none bg-success-subtle text-success border border-success border-opacity-25" id="nav-billing-tab-mob" data-bs-toggle="tab" data-bs-target="#nav-billing" type="button" role="tab">
+                                <i class="fas fa-file-invoice-dollar me-2"></i>PAY CONSULTANCY FEES
+                            </button>
                         </div>
                     </nav>
                 </div>
@@ -157,11 +246,12 @@
                             <i class="fas fa-lock text-muted mb-2"></i>
                             <p class="small text-muted mb-0">Search your private patient record by Record Number or Phone.</p>
                         </div>
-                        <div class="input-group mb-4 shadow-sm rounded-pill overflow-hidden">
+                        <div class="input-group mb-2 shadow-sm rounded-pill overflow-hidden">
                             <span class="input-group-text border-0 bg-white ps-4"><i class="fas fa-search text-muted"></i></span>
-                            <input type="text" id="searchId" class="form-control border-0 py-3" placeholder="Enter PAT-XXXX or Phone Number">
+                            <input type="text" id="searchId" class="form-control border-0 py-3" placeholder="Enter Registration Code" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9-]/g, '')">
                             <button class="btn btn-primary-premium px-4" type="button" onclick="searchPatient()">FIND RECORD</button>
                         </div>
+                        <p class="text-center small text-muted mt-2">Enter PAT-XXXX (e.g. PAT-1234) or registered phone number</p>
                         <div id="searchResultArea" style="display: none;">
                             <!-- Result card injected here -->
                         </div>
@@ -173,10 +263,11 @@
                             <i class="fas fa-file-invoice-dollar text-success mb-2 fa-2x"></i>
                             <p class="small text-success-emphasis mb-0">View your consultancy fees and settle invoices securely.</p>
                         </div>
-                        <div class="input-group mb-4 shadow-sm rounded-pill overflow-hidden">
-                            <input type="text" id="billingQuery" class="form-control border-0 py-3 ps-4" placeholder="Enter Record Number (PAT-XXXX)">
+                        <div class="input-group mb-2 shadow-sm rounded-pill overflow-hidden">
+                            <input type="text" id="billingQuery" class="form-control border-0 py-3 ps-4" placeholder="Enter ID for Billing" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9-]/g, '')">
                             <button class="btn btn-success px-4" type="button" onclick="checkBilling()">CHECK FEES</button>
                         </div>
+                        <p class="text-center small text-success-emphasis mt-2">Enter your PAT-XXXX record number to view and settle outstanding fees</p>
                         <div id="billingResultArea" style="display: none;">
                             <!-- Billing card injected here -->
                         </div>
@@ -215,12 +306,21 @@
             document.getElementById('stat-gp').innerText = `${stats.GP || 0} Waiting`;
             document.getElementById('stat-cardio').innerText = `${stats.Cardio || 0} Waiting`;
             document.getElementById('stat-peds').innerText = `${stats.Peds || 0} Waiting`;
+            
+            const totalWaiting = (stats.GP || 0) + (stats.Cardio || 0) + (stats.Peds || 0);
+            const waitDisp = document.getElementById('avgWaitTime');
+            if (totalWaiting === 0) {
+                waitDisp.innerHTML = '<i class="fas fa-bolt text-success me-1"></i> Expected Wait: <strong>Immediate</strong>';
+            } else {
+                waitDisp.innerHTML = '<i class="fas fa-clock me-1"></i> Avg. Wait Time: 15-20m per patient';
+            }
         } catch (e) { console.error("Error updating stats", e); }
     }
 
     // 2. Registration Logic
     document.getElementById('patientForm').addEventListener('submit', async (e) => {
         e.preventDefault();
+        const submitButton = e.target.querySelector('button[type="submit"]');
         const phone = document.getElementById('phone').value;
         const isEmergency = document.getElementById('isEmergency').checked;
 
@@ -232,8 +332,13 @@
             illness: document.getElementById('illness').value,
             phoneNumber: document.getElementById('countryCode').value + " " + phone,
             isEmergency: isEmergency,
-            aiSuggestedSpecialization: currentSuggestion
+            aiSuggestedSpecialization: window.currentSuggestion
         };
+
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Generating Token...';
+        }
 
         try {
             const response = await fetch(API_URL, {
@@ -242,6 +347,15 @@
                 body: JSON.stringify(data)
             });
             
+            if (response.status === 402) {
+                const errorData = await response.json();
+                document.getElementById('unpaid-amount').innerText = "₹" + errorData.balance;
+                document.getElementById('unpaid-btn-amount').innerText = errorData.balance;
+                const unpaidModal = new bootstrap.Modal(document.getElementById('unpaidModal'));
+                unpaidModal.show();
+                throw new Error("UNPAID_BALANCE");
+            }
+
             if (!response.ok) {
                 throw new Error("Failed to register patient");
             }
@@ -250,67 +364,166 @@
             showReceipt(patient);
             updateDashboard();
             e.target.reset();
+            document.getElementById('aiSuggestion').style.display = 'none';
         } catch (e) {
-            alert("Error registering. Please try again.");
-            console.error("Registration error:", e);
+            if (e.message !== "UNPAID_BALANCE") {
+                console.error("Critical Registration Failure:", e);
+                alert("System Error: " + e.message + ". Please try again or alert hospital staff.");
+            }
+        } finally {
+            // SAFE UNLOCK: Always re-enable button regardless of success/fail
+            if (submitButton) {
+                console.log("Unlocking Registration Button...");
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-check-circle me-2"></i> GENERATE MEDICAL TOKEN';
+            }
         }
     });
 
-    // 3. Private Search Logic
+    // 3. Billing & Emergency Helpers
+    window.goToBilling = function() {
+        bootstrap.Modal.getInstance(document.getElementById('unpaidModal')).hide();
+        // Find which tab button exists (Desktop or Mobile)
+        const tabBtn = document.getElementById('nav-billing-tab-desk') || document.getElementById('nav-billing-tab-mob');
+        if (tabBtn) {
+            const tabTrigger = new bootstrap.Tab(tabBtn);
+            tabTrigger.show();
+        }
+        
+        const currentPhone = document.getElementById('phone').value;
+        const billingQuery = document.getElementById('billingQuery');
+        
+        if (billingQuery) {
+            billingQuery.value = currentPhone;
+            billingQuery.focus();
+            // Automatically trigger the search to show logs directly
+            checkBilling();
+        }
+    };
+
+    window.emergencyOverride = function() {
+        bootstrap.Modal.getInstance(document.getElementById('unpaidModal')).hide();
+        document.getElementById('isEmergency').checked = true;
+        // Re-trigger the form submission
+        document.getElementById('patientForm').requestSubmit();
+    };
+
+    // 3. Private Search Logic (ID or Phone History)
     async function searchPatient() {
         const query = document.getElementById('searchId').value.trim();
         const resultArea = document.getElementById('searchResultArea');
+        const findBtn = document.querySelector('button[onclick="searchPatient()"]');
         if (!query) return;
 
+        findBtn.disabled = true;
+        findBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+        resultArea.style.display = 'block';
+        resultArea.innerHTML = '<div class="text-center py-4"><div class="spinner-grow text-primary" role="status"></div><div class="mt-2 text-muted">Searching Central Records...</div></div>';
+
         try {
-            const response = await fetch(`${API_URL}/search/${query}`);
+            const isPhone = /^\+?[\d\s-]+$/.test(query) && query.length >= 10;
+            const endpoint = `${API_URL}/search/${query}`;
+            
+            const response = await fetch(endpoint);
+            if (response.status === 404) {
+                resultArea.innerHTML = `
+                    <div class="text-center py-5 animate__animated animate__fadeIn">
+                        <i class="fas fa-search-minus fa-3x text-muted mb-3"></i>
+                        <h5 class="text-dark">Record Not Found</h5>
+                        <p class="text-muted small">We couldn't find any data for "${query}".<br>Please check the ID or Phone Number and try again.</p>
+                    </div>
+                `;
+                return;
+            }
+
             if (response.ok) {
                 const data = await response.json();
-                const p = Array.isArray(data) ? data[data.length - 1] : data; // Get latest record
+                resultArea.innerHTML = ''; 
+
+                const patients = Array.isArray(data) ? data : [data];
                 
-                resultArea.style.display = 'block';
-                const baseWait = (p.tokenNumber - 1) * 15;
-                const waitTime = Math.min(baseWait, 120);
-                
-                resultArea.innerHTML = `
-                    <div class="patient-card animate__animated animate__fadeInUp">
+                if (patients.length === 0) {
+                    resultArea.innerHTML = '<div class="alert alert-warning rounded-4 mt-3">No records found.</div>';
+                    return;
+                }
+
+                if (isPhone && patients.length > 1) {
+                    const header = document.createElement('div');
+                    header.className = 'small fw-bold text-muted mb-3 ps-2';
+                    header.textContent = `FOUND ${patients.length} VISITS FOR THIS PHONE:`;
+                    resultArea.appendChild(header);
+                }
+
+                patients.reverse().forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = 'patient-card animate__animated animate__fadeInUp mb-3';
+                    card.innerHTML = `
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div>
-                                <h5 class="mb-1 font-outfit text-primary">${p.name}</h5>
-                                <span class="badge bg-light text-dark border">${p.recordNumber}</span>
+                                <h5 class="mb-1 font-outfit text-primary" id="res-name"></h5>
+                                <span class="badge bg-light text-dark border" id="res-id"></span>
+                                <small class="text-muted d-block mt-1" id="res-date"></small>
                             </div>
                             <div class="text-end">
                                 <small class="text-muted d-block">Status</small>
-                                <span class="badge bg-success">CHECKED IN</span>
+                                <span class="badge ${p.status === 'TREATED' ? 'bg-success' : 'bg-warning text-dark'}">
+                                    ${p.status === 'TREATED' ? 'TREATED & COMPLETED' : 'IN QUEUE / PENDING'}
+                                </span>
                             </div>
                         </div>
                         <div class="row g-2 small mb-3">
-                            <div class="col-6 text-muted">Est. Wait: <strong>${waitTime > 0 ? waitTime + ' mins' : 'Ready Now'}</strong></div>
-                            <div class="col-6 text-muted">Token: <strong>#${p.tokenNumber}</strong></div>
+                            <div class="col-4 text-muted">Token: <strong id="res-token"></strong></div>
+                            <div class="col-4 text-muted">Specialist: <strong id="res-dept"></strong></div>
+                            <div class="col-4 text-end text-primary fw-bold" id="res-wait"></div>
                         </div>
-                        <div class="p-3 bg-light rounded-4 mb-3 small border-start border-primary border-4">
+                        <div id="ai-insight-box" class="p-3 bg-light rounded-4 mb-3 small border-start border-primary border-4">
                             <div class="fw-bold text-primary mb-1"><i class="fas fa-robot me-1"></i> AI Health Insight</div>
-                            <div class="mb-1">${p.aiAnalysis || "Pending analysis..."}</div>
-                            <div class="text-muted italic">Guidance: ${p.wellnessAdvice || "Follow doctor's advice."}</div>
+                            <div class="mb-1" id="res-analysis"></div>
                         </div>
                         <div class="d-grid">
-                            <button class="btn btn-outline-primary rounded-pill btn-sm" onclick='showReceipt(${JSON.stringify(p)})'>
+                            <button class="btn btn-outline-primary rounded-pill btn-sm" id="res-view-btn">
                                 <i class="fas fa-file-invoice me-1"></i> VIEW FULL TOKEN
                             </button>
                         </div>
-                    </div>
-                `;
+                    `;
+                    
+                    card.querySelector('#res-name').textContent = p.name;
+                    card.querySelector('#res-id').textContent = p.recordNumber;
+                    
+                    let dateInfo = "Registration: Initial";
+                    if (p.treatmentDate) {
+                        dateInfo = "Treated On: " + p.treatmentDate;
+                    } else if (p.nextAppointmentDate) {
+                        dateInfo = "Est. Date: " + p.nextAppointmentDate;
+                    }
+                    card.querySelector('#res-date').textContent = dateInfo;
+                    card.querySelector('#res-token').textContent = '#' + p.tokenNumber;
+                    card.querySelector('#res-dept').textContent = p.doctorSpecialization;
+                    
+                    const calculatedWait = p.status === 'TREATED' ? 0 : Math.min(p.patientsAhead * 15, 120);
+                    card.querySelector('#res-wait').textContent = p.status === 'TREATED' ? '' : (calculatedWait > 0 ? calculatedWait + ' MIN WAIT' : 'IMMEDIATE');
+                    
+                    card.querySelector('#res-analysis').textContent = p.aiAnalysis || "Pending diagnosis...";
+                    card.querySelector('#res-view-btn').onclick = () => showReceipt(p);
+                    
+                    resultArea.appendChild(card);
+                });
             } else {
                 alert("No record found for this ID or Phone.");
             }
-        } catch (e) { alert("An error occurred during search."); }
+        } catch (e) { 
+            console.error("Search error", e);
+            alert("An error occurred during search."); 
+        } finally {
+            findBtn.disabled = false;
+            findBtn.innerHTML = 'FIND RECORD';
+        }
     }
 
     // 4. Digital Receipt / Triage Instructions
     function showReceipt(p) {
         const container = document.getElementById('receipt-container');
-        const baseWait = (p.tokenNumber - 1) * 15;
-        const waitTime = Math.min(baseWait, 120);
+        const waitMinutes = Math.min(p.patientsAhead * 15, 120);
         
         if (p.isEmergency) {
             container.innerHTML = `
@@ -322,13 +535,14 @@
                         <p class="mb-2"><strong>Instructions:</strong></p>
                         <ol class="mb-0">
                             <li>Report directly to the <strong>Emergency Triage Desk</strong>.</li>
-                            <li>Inform the staff your Record ID is <strong>${p.recordNumber}</strong>.</li>
+                            <li>Inform the staff your Record ID is <strong id="rec-id-em"></strong>.</li>
                             <li>Do not wait in the standard waiting area.</li>
                         </ol>
                     </div>
                     <button class="btn btn-danger btn-premium px-5" data-bs-dismiss="modal">I AM PROCEEDING NOW</button>
                 </div>
             `;
+            container.querySelector('#rec-id-em').textContent = p.recordNumber;
         } else {
             container.innerHTML = `
                 <div class="p-5" id="receipt-content">
@@ -341,7 +555,7 @@
                     <div class="token-circle mb-4">
                         <div class="text-center">
                             <small class="d-block text-muted" style="font-size: 0.7rem;">TOKEN</small>
-                            <span class="display-3 fw-bold">${p.tokenNumber}</span>
+                            <span class="display-3 fw-bold" id="rec-token"></span>
                         </div>
                     </div>
 
@@ -349,19 +563,19 @@
                         <div class="row g-3">
                             <div class="col-7">
                                 <small class="text-muted d-block">PATIENT</small>
-                                <strong class="fs-5">${p.name}</strong>
+                                <strong class="fs-5" id="rec-name"></strong>
                             </div>
                             <div class="col-5 text-end">
                                 <small class="text-muted d-block">EST. WAIT</small>
-                                <strong class="fs-5 text-primary">${waitTime > 0 ? waitTime + ' Min' : 'Fast Track'}</strong>
+                                <strong class="fs-5 text-primary" id="rec-wait"></strong>
                             </div>
                             <div class="col-7">
                                 <small class="text-muted d-block">DOCTOR ASSIGNED</small>
-                                <strong>${p.doctorAssigned}</strong>
+                                <strong id="rec-doc"></strong>
                             </div>
                             <div class="col-5 text-end">
                                 <small class="text-muted d-block">RECORD ID</small>
-                                <span class="badge bg-white text-dark border">${p.recordNumber}</span>
+                                <span class="badge bg-white text-dark border" id="rec-id"></span>
                             </div>
                         </div>
                     </div>
@@ -369,17 +583,25 @@
                     <div class="alert alert-info border-0 rounded-4 p-3 show-on-print mb-3">
                         <div class="d-flex align-items-center">
                             <i class="fas fa-info-circle me-3 fa-lg"></i>
-                            <div class="small">Please wait in the <strong>${p.doctorSpecialization}</strong> waiting area. You will be called by your token number.</div>
+                            <div class="small">Please wait in the <strong id="rec-dept"></strong> waiting area. You will be called by your token number.</div>
                         </div>
                     </div>
 
                     <div class="p-4 bg-info-subtle rounded-4 mb-0 border-top border-info border-3">
                         <h6 class="fw-bold text-info-emphasis mb-2"><i class="fas fa-magic me-2"></i>Claude Ally Health Analysis</h6>
-                        <p class="small mb-2"><strong>Quick Analysis:</strong> ${p.aiAnalysis}</p>
-                        <p class="small mb-0 text-muted"><strong>Wellness Guidance:</strong> ${p.wellnessAdvice}</p>
+                        <p class="small mb-2"><strong>Quick Analysis:</strong> <span id="rec-analysis"></span></p>
+                        <p class="small mb-0 text-muted"><strong>Wellness Guidance:</strong> <span id="rec-wellness"></span></p>
                     </div>
                 </div>
             `;
+            container.querySelector('#rec-token').textContent = p.tokenNumber;
+            container.querySelector('#rec-name').textContent = p.name;
+            container.querySelector('#rec-wait').textContent = waitMinutes > 0 ? waitMinutes + ' MIN' : 'IMMEDIATE';
+            container.querySelector('#rec-doc').textContent = p.doctorAssigned;
+            container.querySelector('#rec-id').textContent = p.recordNumber;
+            container.querySelector('#rec-dept').textContent = p.doctorSpecialization;
+            container.querySelector('#rec-analysis').textContent = p.aiAnalysis;
+            container.querySelector('#rec-wellness').textContent = p.wellnessAdvice;
         }
         new bootstrap.Modal(document.getElementById('receiptModal')).show();
     }
@@ -389,135 +611,225 @@
         const resultArea = document.getElementById('billingResultArea');
         if (!query) return;
 
+        resultArea.style.display = 'block';
+        resultArea.innerHTML = '<div class="text-center py-3"><div class="spinner-border text-success" role="status"></div></div>';
+
         try {
             const response = await fetch(`${API_URL}/search/${query}`);
             if (response.ok) {
-                const p = await response.json();
-                resultArea.style.display = 'block';
-                resultArea.innerHTML = `
-                    <div class="card p-4 border-0 bg-light rounded-4 animate__animated animate__fadeInUp">
+                const data = await response.json();
+                const patients = Array.isArray(data) ? data : [data];
+                
+                resultArea.innerHTML = '';
+                
+                if (patients.length === 0) {
+                    resultArea.innerHTML = '<div class="alert alert-warning rounded-pill text-center">No pending invoices found.</div>';
+                    return;
+                }
+
+                patients.reverse().forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = 'card p-4 border-0 bg-light rounded-4 animate__animated animate__fadeInUp mb-3';
+                    
+                    const statusBadge = p.paid ? 
+                        '<span class="badge bg-success-subtle text-success rounded-pill px-3"><i class="fas fa-check-circle me-1"></i>PAID</span>' : 
+                        '<span class="badge bg-warning-subtle text-warning-emphasis rounded-pill px-3">UNPAID / PENDING</span>';
+
+                    const payButton = p.paid ? 
+                        '<button class="btn btn-outline-success w-100 rounded-pill mt-3 py-2 disabled"><i class="fas fa-receipt me-2"></i>INVOICE SETTLED</button>' :
+                        `<button class="btn btn-success w-100 rounded-pill mt-3 py-3 fw-bold shadow-sm" onclick="settlePayment(${p.id})"><i class="fas fa-credit-card me-2"></i> PAY INVOICE NOW</button>`;
+
+                    card.innerHTML = `
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="mb-0 text-success">Invoice for ${p.name}</h5>
-                            <span class="badge bg-success rounded-pill px-3">PENDING</span>
+                            ${statusBadge}
                         </div>
                         <div class="row text-start small border-top pt-3">
                             <div class="col-6 mb-2">Record ID:</div><div class="col-6 fw-bold mb-2">${p.recordNumber}</div>
                             <div class="col-6 mb-2 text-danger fs-5">Consultancy Fee:</div><div class="col-6 fw-bold mb-2 text-danger fs-4">${p.consultancyFee}</div>
                             <div class="col-6 mb-2">Specialist:</div><div class="col-6 mb-2">${p.doctorAssigned}</div>
                         </div>
-                        <button class="btn btn-success w-100 rounded-pill mt-3 py-3 fw-bold shadow-sm" onclick="alert('Demo Payment Successful! In a production system, this would redirect to a Payment Gateway.')">
-                            <i class="fas fa-credit-card me-2"></i> PAY WITH UPI/CARD
-                        </button>
-                    </div>
-                `;
-            } else { alert("Record not found."); }
-        } catch (e) { alert("Error checking billing."); }
+                        ${payButton}
+                    `;
+                    resultArea.appendChild(card);
+                });
+            } else { 
+                resultArea.innerHTML = '<div class="alert alert-danger rounded-pill text-center">Record not found.</div>';
+            }
+        } catch (e) { 
+            resultArea.innerHTML = '<div class="alert alert-danger rounded-pill text-center">Error connecting to Billing Service.</div>';
+        }
+    }
+
+    async function settlePayment(id) {
+        if(!confirm("Are you sure you want to settle this payment?")) return;
+        
+        try {
+            const response = await fetch(`${API_URL}/${id}/settle`, { method: 'PUT' });
+            if(response.ok) {
+                alert("Payment Successful! Your digital receipt has been updated.");
+                checkBilling(); // Refresh billing view
+            } else {
+                throw new Error("Payment failed");
+            }
+        } catch (e) {
+            alert("Error settling payment. Please try again.");
+        }
     }
 
     updateDashboard();
 </script>
 
 <script type="module">
-    import { pipeline } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers';
-
-    let classifier;
-    const aiStatus = document.getElementById('ai-status');
+    const aiBadge = document.getElementById('ai-status');
     const aiSuggestionBox = document.getElementById('aiSuggestion');
     const aiBoxContainer = document.getElementById('aiSuggestionBox');
-    const aiIcon = document.getElementById('aiSuggestionIcon');
     const suggestedDeptText = document.getElementById('suggestedDept');
     
-    // MUST match DoctorAIService KNOWLEDGE_BASE keys exactly
+    // 0. SHARED DATA & STATE
     const DEPARTMENTS = [
         "General Physician", "Cardiologist", "Gastroenterologist", "Orthopedic Surgeon", 
         "Dermatologist", "Psychiatrist", "Ophthalmologist", "ENT Specialist", 
         "Gynecologist", "Urologist", "Endocrinologist", "Pulmonologist", 
         "Neurologist", "Nephrologist", "Pediatrician", "Oncologist"
     ];
+    
+    const KEYWORD_MAP = {
+        "heart": "Cardiologist", "chest": "Cardiologist", "breath": "Pulmonologist",
+        "stomach": "Gastroenterologist", "digestion": "Gastroenterologist", "pain": "General Physician",
+        "skin": "Dermatologist", "rash": "Dermatologist", "bone": "Orthopedic Surgeon",
+        "eye": "Ophthalmologist", "vision": "Ophthalmologist", "child": "Pediatrician",
+        "ear": "ENT Specialist", "nose": "ENT Specialist", "mental": "Psychiatrist", "cancer": "Oncologist"
+    };
+
     const CRITICAL_KEYWORDS = ["chest", "breath", "bleed", "seizure", "stroke", "unconscious", "heart"];
-    let currentSuggestion = "";
+    
+    window.currentSuggestion = "";
     let isCritical = false;
+    let classifier = null;
 
-    async function initAI() {
-        try {
-            // Using a high-fidelity Zero-Shot model optimized for 5G speed
-            classifier = await pipeline('zero-shot-classification', 'Xenova/mobilebert-uncased-mnli');
-            aiStatus.innerHTML = '<i class="fas fa-check-circle me-2"></i>AI Assistant Online';
-            aiStatus.className = 'badge bg-success text-white animate__animated animate__fadeIn';
-        } catch (e) {
-            console.error("AI Error", e);
-            aiStatus.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>AI Offline (Check Internet)';
-            aiStatus.className = 'badge bg-danger text-white';
-        }
-    }
-
-    initAI();
-
+    // 1. NON-BLOCKING EVENT LISTENER (Attaches Instantly)
     let debounceTimer;
     document.getElementById('illness').addEventListener('input', async (e) => {
-        if (!classifier) return;
+        const text = e.target.value.trim().toLowerCase();
         
-        clearTimeout(debounceTimer);
-        const text = e.target.value.trim();
-        
-        if (text.length < 10) {
+        if (text.length < 5) {
             aiSuggestionBox.style.display = 'none';
             return;
         }
 
+        // --- INSTANT KEYWORD & EMERGENCY LOGIC ---
+        isCritical = CRITICAL_KEYWORDS.some(k => text.includes(k));
+        if (isCritical) {
+            aiSuggestionBox.style.display = 'block';
+            suggestedDeptText.innerHTML = `<i class="fas fa-ambulance me-1"></i> IMMEDIATE EMERGENCY DETECTED`;
+            if (aiBoxContainer) aiBoxContainer.className = 'd-flex align-items-center p-2 bg-danger-subtle border border-danger rounded-4';
+            const emergencyCheckbox = document.getElementById('isEmergency');
+            if (emergencyCheckbox && !emergencyCheckbox.checked) emergencyCheckbox.checked = true;
+        }
+
+        let keywordMatch = null;
+        for (const [key, dept] of Object.entries(KEYWORD_MAP)) {
+            if (text.includes(key)) {
+                keywordMatch = dept;
+                break;
+            }
+        }
+
+        if (keywordMatch && !isCritical) {
+            window.currentSuggestion = keywordMatch;
+            suggestedDeptText.innerHTML = `<i class="fas fa-bolt me-1"></i> Suggested: ${keywordMatch}`;
+            aiSuggestionBox.style.display = 'block';
+            aiSuggestionBox.querySelector('button').style.display = 'inline-block';
+            if (aiBoxContainer) aiBoxContainer.className = 'd-flex align-items-center p-2 bg-info-subtle border border-info rounded-4';
+        }
+
+        // --- AI LOGIC DEFERRAL ---
+        if (!classifier) {
+            if (!keywordMatch && !isCritical) {
+                suggestedDeptText.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>AI is warming up...';
+                aiSuggestionBox.style.display = 'block';
+                aiSuggestionBox.querySelector('button').style.display = 'none';
+                if (aiBoxContainer) aiBoxContainer.className = 'd-flex align-items-center p-2 border rounded-4';
+            }
+            return; // Exit early since AI isn't ready
+        }
+
+        clearTimeout(debounceTimer);
+        if (text.length < 10) return;
+
         debounceTimer = setTimeout(async () => {
             try {
-                // Check criticality
-                isCritical = CRITICAL_KEYWORDS.some(k => text.toLowerCase().includes(k));
-                
+                console.log("AI: Classifying text:", text);
                 const result = await classifier(text, DEPARTMENTS);
                 const winningLabel = result.labels[0];
                 const confidence = result.scores[0];
 
                 if (confidence > 0.4) {
-                    currentSuggestion = winningLabel;
-                    suggestedDeptText.innerText = winningLabel + ` (${Math.round(confidence * 100)}%)`;
+                    window.currentSuggestion = winningLabel;
                     aiSuggestionBox.style.display = 'block';
-                    
-                    if (isCritical) {
-                        aiBoxContainer.className = 'd-flex align-items-center p-2 bg-danger-subtle border border-danger rounded-4';
-                        aiIcon.className = 'fas fa-exclamation-triangle text-danger me-2 ms-2';
-                        suggestedDeptText.parentElement.className = 'small text-danger-emphasis';
-                        suggestedDeptText.innerHTML = winningLabel + " [CRITICAL ALERT]";
-                    } else {
-                        aiBoxContainer.className = 'd-flex align-items-center p-2 bg-info-subtle border border-info rounded-4';
-                        aiIcon.className = 'fas fa-magic text-info me-2 ms-2';
-                        suggestedDeptText.parentElement.className = 'small text-info-emphasis';
-                    }
-
-                    // Proactive Auto-Select on high confidence (>80%)
-                    if (confidence > 0.8) {
-                        applySuggestion();
+                    aiSuggestionBox.querySelector('button').style.display = 'inline-block';
+                    if (!isCritical) {
+                        suggestedDeptText.innerHTML = `<i class="fas fa-magic me-1"></i> AI Think: ${winningLabel} (${Math.round(confidence * 100)}%)`;
+                        if (aiBoxContainer) aiBoxContainer.className = 'd-flex align-items-center p-2 bg-info-subtle border border-info rounded-4';
                     }
                 }
-            } catch (err) { console.error("Classification error", err); }
+            } catch (err) { console.error("AI: Inference Error:", err); }
         }, 800);
     });
 
     window.applySuggestion = function() {
-        if (!currentSuggestion) return;
+        if (!window.currentSuggestion && !isCritical) return;
         
         if (isCritical) {
-            // Only change it if it's currently false
             const emergencyCheckbox = document.getElementById('isEmergency');
-            if (!emergencyCheckbox.checked) {
+            if (emergencyCheckbox && !emergencyCheckbox.checked) {
                 emergencyCheckbox.checked = true;
             }
             suggestedDeptText.innerHTML = `<i class="fas fa-ambulance me-1"></i> EMERGENCY MODE ACTIVATED`;
         } else {
-            suggestedDeptText.innerHTML = `<i class="fas fa-check me-1"></i> ${currentSuggestion} Selected`;
+            suggestedDeptText.innerHTML = `<i class="fas fa-check me-1"></i> ${window.currentSuggestion} Selected`;
         }
         
-        aiSuggestionBox.querySelector('button').style.display = 'none';
+        const btn = aiSuggestionBox.querySelector('button');
+        if (btn) btn.style.display = 'none';
         
         const illnessField = document.getElementById('illness');
-        illnessField.style.borderColor = isCritical ? 'var(--bs-danger)' : 'var(--secondary)';
+        if (illnessField) illnessField.style.borderColor = isCritical ? 'var(--bs-danger)' : 'var(--secondary)';
     };
+
+    // 2. BACKGROUND AI DOWNLOADER
+    async function initAIBackground() {
+        console.log("AI: Starting Triage Engine Download...");
+        try {
+            if (aiBadge) aiBadge.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Loading Brain...';
+            
+            const { pipeline, env } = await import('https://unpkg.com/@xenova/transformers@2.17.2');
+            env.allowLocalModels = false;
+            env.useBrowserCache = true;
+            
+            const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('AI Load Timeout')), 8000));
+            
+            classifier = await Promise.race([
+                pipeline('zero-shot-classification', 'Xenova/mobilebert-uncased-mnli'),
+                timeout
+            ]);
+            
+            if (aiBadge) {
+                aiBadge.innerHTML = '<i class="fas fa-check-circle me-1"></i>AI Active';
+                aiBadge.className = 'badge bg-success-subtle text-success';
+            }
+        } catch (error) {
+            console.warn("AI: Falling back to Keyword Engine:", error);
+            if (aiBadge) {
+                aiBadge.innerHTML = '<i class="fas fa-bolt me-1"></i>Keyword Engine Active';
+                aiBadge.className = 'badge bg-info-subtle text-info';
+            }
+        }
+    }
+
+    // Call without await to prevent blocking the script
+    initAIBackground();
 </script>
 <script>
 // Add this right before the closing </body> tag in terminal.html
@@ -532,5 +844,36 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 </script>
+    <!-- Outstanding Balance Modal -->
+    <div class="modal fade unpaid-alert-modal shadow" id="unpaidModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 border-0">
+                <div class="modal-body text-center">
+                    <div class="emergency-pill animate__animated animate__fadeInDown">FINANCIAL AUDIT REQUIRED</div>
+                    <div class="unpaid-icon-circle animate__animated animate__pulse animate__infinite">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <h2 class="fw-bold font-outfit mb-2">Account On Hold</h2>
+                    <p class="text-muted mb-4 fs-5">There is a pending balance of <strong class="text-danger" id="unpaid-amount"></strong> on this phone number.</p>
+                    
+                    <div class="bg-light rounded-4 p-3 text-start small mb-4 border-start border-warning border-4">
+                        <i class="fas fa-exclamation-triangle text-warning me-2"></i> 
+                        Hospital policy requires settlement of previous consultancy dues before new routine registrations can be processed.
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-pay-now btn-premium py-3 fs-5 shadow-sm" onclick="goToBilling()">
+                             SETTLE ₹<span id="unpaid-btn-amount"></span> & CONTINUE
+                        </button>
+                        <button class="btn btn-link text-danger text-decoration-none fw-bold mt-2" onclick="emergencyOverride()">
+                             <i class="fas fa-ambulance me-2"></i>Life-Threatening Emergency? <span class="text-decoration-underline">Override & Proceed</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
