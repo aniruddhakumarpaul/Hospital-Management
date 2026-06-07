@@ -5,7 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.springframework.transaction.annotation.Transactional;
+
 @SpringBootTest
+@Transactional
 class HospitalManagementSystemApplicationTests {
 
     @Autowired
@@ -89,9 +92,55 @@ class HospitalManagementSystemApplicationTests {
         for (Patient p : allPatients) {
             String doc = p.getDoctorAssigned();
             int tok = p.getTokenNumber();
-            doctorTokens.putIfAbsent(doc, new java.util.HashSet<>());
-            boolean added = doctorTokens.get(doc).add(tok);
-            assertTrue(added, "Duplicate token " + tok + " allocated to doctor " + doc);
+            if (tok != 0) { // scheduled next-day patients have token 0
+                doctorTokens.putIfAbsent(doc, new java.util.HashSet<>());
+                boolean added = doctorTokens.get(doc).add(tok);
+                assertTrue(added, "Duplicate token " + tok + " allocated to doctor " + doc);
+            }
         }
+    }
+
+    @Test
+    void testDoctorQueueCapacityAndNextDayScheduling() {
+        patientRepository.deleteAll();
+
+        // Roster GP has 3 doctors: House, Watson, Murphy.
+        // Register 18 routine patients sequentially with GP (General Physician).
+        // Since load-balancing is active, they will be distributed: each doctor gets 6 patients.
+        for (int i = 0; i < 18; i++) {
+            PatientDTO p = new PatientDTO();
+            p.setName("GP Routine Patient " + i);
+            p.setAge(30);
+            p.setPhoneNumber("+91 98765431" + (i < 10 ? "0" + i : i));
+            p.setIllness("cough"); // GP scope
+            p.setEmergency(false);
+            p.setPaid(true);
+
+            PatientDTO registered = patientService.registerPatient(p);
+            assertNotNull(registered);
+            assertEquals("REGISTERED", registered.getStatus());
+            assertNotEquals(0, registered.getTokenNumber());
+        }
+
+        // Verify each doctor has exactly 6 patients
+        assertEquals(6, patientRepository.countByDoctorAssignedAndStatus("Dr. Gregory House", "REGISTERED"));
+        assertEquals(6, patientRepository.countByDoctorAssignedAndStatus("Dr. John Watson", "REGISTERED"));
+        assertEquals(6, patientRepository.countByDoctorAssignedAndStatus("Dr. Shaun Murphy", "REGISTERED"));
+
+        // Register the 19th routine patient. Since all GP doctors have 6 waiting patients,
+        // this patient should be scheduled for the next day.
+        PatientDTO p19 = new PatientDTO();
+        p19.setName("Kiosk Overflow Patient");
+        p19.setAge(35);
+        p19.setPhoneNumber("+91 9876543299");
+        p19.setIllness("cough"); // GP scope
+        p19.setEmergency(false);
+        p19.setPaid(true);
+
+        PatientDTO registered19 = patientService.registerPatient(p19);
+        assertNotNull(registered19);
+        assertEquals("SCHEDULED", registered19.getStatus());
+        assertEquals(0, registered19.getTokenNumber());
+        assertEquals(java.time.LocalDate.now().plusDays(1).format(java.time.format.DateTimeFormatter.ofPattern("dd MMM yyyy")), registered19.getNextAppointmentDate());
     }
 }

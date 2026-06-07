@@ -642,8 +642,8 @@
                             </div>
                             <div class="text-end">
                                 <small class="text-muted d-block">Status</small>
-                                <span class="badge ${p.status === 'TREATED' ? 'bg-success' : 'bg-warning text-dark'}">
-                                    ${p.status === 'TREATED' ? 'TREATED & COMPLETED' : 'IN QUEUE / PENDING'}
+                                <span class="badge ${p.status === 'TREATED' ? 'bg-success' : (p.status === 'SCHEDULED' ? 'bg-info text-dark' : 'bg-warning text-dark')}">
+                                    ${p.status === 'TREATED' ? 'TREATED & COMPLETED' : (p.status === 'SCHEDULED' ? 'SCHEDULED (NEXT DAY)' : 'IN QUEUE / PENDING')}
                                 </span>
                             </div>
                         </div>
@@ -673,11 +673,17 @@
                             dateInfo = "Est. Date: " + p.nextAppointmentDate;
                         }
                         card.querySelector('#res-date').textContent = dateInfo;
-                        card.querySelector('#res-token').textContent = '#' + p.tokenNumber;
+                        card.querySelector('#res-token').textContent = p.status === 'SCHEDULED' ? 'N/A' : '#' + p.tokenNumber;
                         card.querySelector('#res-dept').textContent = p.doctorSpecialization;
 
-                        const calculatedWait = p.status === 'TREATED' ? 0 : Math.min(p.patientsAhead * 15, 120);
-                        card.querySelector('#res-wait').textContent = p.status === 'TREATED' ? '' : (calculatedWait > 0 ? calculatedWait + ' MIN WAIT' : 'IMMEDIATE');
+                        if (p.status === 'TREATED') {
+                            card.querySelector('#res-wait').textContent = '';
+                        } else if (p.status === 'SCHEDULED') {
+                            card.querySelector('#res-wait').textContent = 'NEXT DAY';
+                        } else {
+                            const calculatedWait = Math.min(p.patientsAhead * 15, 120);
+                            card.querySelector('#res-wait').textContent = calculatedWait > 0 ? calculatedWait + ' MIN WAIT' : 'IMMEDIATE';
+                        }
 
                         card.querySelector('#res-analysis').textContent = p.aiAnalysis || "Pending diagnosis...";
                         card.querySelector('#res-view-btn').onclick = () => showReceipt(p);
@@ -755,14 +761,13 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="alert alert-info border-0 rounded-4 p-3 show-on-print mb-3">
                         <div class="d-flex align-items-center">
                             <i class="fas fa-info-circle me-3 fa-lg"></i>
-                            <div class="small">Please wait in the <strong id="rec-dept"></strong> waiting area. You will be called by your token number.</div>
+                            <div class="small" id="rec-info-msg">Please wait in the <strong id="rec-dept"></strong> waiting area. You will be called by your token number.</div>
                         </div>
                     </div>
-
+ 
                     <div class="p-4 bg-info-subtle rounded-4 mb-0 border-top border-info border-3">
                         <h6 class="fw-bold text-info-emphasis mb-2"><i class="fas fa-magic me-2"></i>AI Health Analysis</h6>
                         <p class="small mb-2"><strong>Quick Analysis:</strong> <span id="rec-analysis"></span></p>
@@ -770,14 +775,18 @@
                     </div>
                 </div>
             `;
-                container.querySelector('#rec-token').textContent = p.tokenNumber;
+                container.querySelector('#rec-token').textContent = p.status === 'SCHEDULED' ? 'NEXT-DAY' : p.tokenNumber;
                 container.querySelector('#rec-name').textContent = p.name;
-                container.querySelector('#rec-wait').textContent = waitMinutes > 0 ? waitMinutes + ' MIN' : 'IMMEDIATE';
+                container.querySelector('#rec-wait').textContent = p.status === 'SCHEDULED' ? 'NEXT DAY' : (waitMinutes > 0 ? waitMinutes + ' MIN' : 'IMMEDIATE');
                 container.querySelector('#rec-doc').textContent = p.doctorAssigned;
                 container.querySelector('#rec-id').textContent = p.recordNumber;
                 container.querySelector('#rec-dept').textContent = p.doctorSpecialization;
                 container.querySelector('#rec-analysis').textContent = p.aiAnalysis;
                 container.querySelector('#rec-wellness').textContent = p.wellnessAdvice;
+
+                if (p.status === 'SCHEDULED') {
+                    container.querySelector('#rec-info-msg').innerHTML = `All doctors in the <strong>${p.doctorSpecialization}</strong> department are at capacity today. You are scheduled for <strong>${p.nextAppointmentDate}</strong>.`;
+                }
             }
             new bootstrap.Modal(document.getElementById('receiptModal')).show();
         }

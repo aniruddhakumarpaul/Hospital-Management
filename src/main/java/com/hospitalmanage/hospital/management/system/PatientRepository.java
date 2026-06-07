@@ -17,6 +17,9 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     // Count existing patients for a doctor (Used for Token Number 1, 2, 3...)
     long countByDoctorAssigned(String doctorAssigned);
 
+    // Count active waiting patients in a doctor's queue
+    long countByDoctorAssignedAndStatus(String doctorAssigned, String status);
+
     // Find highest token number for a doctor safely avoiding deleted overlaps
     Optional<Patient> findFirstByDoctorAssignedOrderByTokenNumberDesc(String doctorAssigned);
 
@@ -39,6 +42,9 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
 
     // Stats counter for dashboard (Waiting patients only)
     long countByDoctorSpecializationAndStatusNot(String doctorSpecialization, String status);
+
+    // Count patients in queue by specialization and status
+    long countByDoctorSpecializationAndStatus(String doctorSpecialization, String status);
 
     // Dynamic Queue Logic: Count patients IN FRONT of this token who are not yet treated
     long countByDoctorSpecializationAndStatusNotAndTokenNumberLessThan(String doctorSpecialization, String status, int tokenNumber);

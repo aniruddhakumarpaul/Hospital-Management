@@ -196,38 +196,69 @@ public class DoctorAIService {
         String wellness = WELLNESS_TIPS.getOrDefault(bestSpecialty, PRESCRIBER_DATABASE.get("Wellness Default"));
         patient.setWellnessAdvice(wellness);
 
-        String assignedDoctor = getRandomDoctorForSpecialty(bestSpecialty);
-        patient.setDoctorAssigned(assignedDoctor);
+        String[] doctors = DOCTOR_ROSTER.getOrDefault(bestSpecialty, DOCTOR_ROSTER.get("General Physician"));
+        String assignedDoctor = null;
+        boolean nextDayScheduled = false;
 
-        int tokenNumber = patientRepository.findMaxTokenNumberByDoctorSpecialization(bestSpecialty) + 1;
-        patient.setTokenNumber(tokenNumber);
+        // Find the doctor in the roster with the least active queue load
+        String leastLoadedDoc = doctors[0];
+        long minLoad = Long.MAX_VALUE;
+        for (String doc : doctors) {
+            long load = patientRepository.countByDoctorAssignedAndStatus(doc, "REGISTERED");
+            if (load < minLoad) {
+                minLoad = load;
+                leastLoadedDoc = doc;
+            }
+        }
+
+        // Apply policy
+        if (patient.isEmergency() || isCriticalDetected) {
+            // Emergency bypasses all limits, assign to the least loaded doctor immediately
+            assignedDoctor = leastLoadedDoc;
+        } else {
+            if (minLoad < 6) {
+                // Doctor with the least load is within limit, assign to them
+                assignedDoctor = leastLoadedDoc;
+            } else {
+                // All doctors in this department are full (> 6 waiting patients), schedule for next day
+                assignedDoctor = leastLoadedDoc;
+                nextDayScheduled = true;
+            }
+        }
+
+        patient.setDoctorAssigned(assignedDoctor);
 
         Random random = new Random();
         String randomFee = FEES[random.nextInt(FEES.length)];
         patient.setConsultancyFee("₹" + randomFee);
 
-        int daysToAdd = APPOINTMENT_DAYS[random.nextInt(APPOINTMENT_DAYS.length)];
-        LocalDate futureDate = LocalDate.now().plusDays(daysToAdd);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
-        patient.setNextAppointmentDate(futureDate.format(formatter));
-
-        // --- Conditional AI Prescription Logic ---
-        long existingCount = patientRepository.countByDoctorAssigned(assignedDoctor);
-        if (existingCount >= 5 || isCriticalDetected) {
-            String medSuggestions = PRESCRIBER_DATABASE.getOrDefault(bestSpecialty, "Standard symptomatic treatment");
-            String prefix = isCriticalDetected ? "⚠️ URGENT CARE ADVISED: " : "⚠️ AI SUGGESTED (Doctor Busy): ";
-            patient.setPrescription(prefix + medSuggestions);
+        if (nextDayScheduled) {
+            patient.setStatus("SCHEDULED");
+            patient.setTokenNumber(0);
+            patient.setNextAppointmentDate(LocalDate.now().plusDays(1).format(formatter));
+            patient.setPrescription("Pending Next-Day Consultation");
         } else {
-            patient.setPrescription("Pending Doctor Consultation");
+            int tokenNumber = patientRepository.findMaxTokenNumberByDoctorSpecialization(bestSpecialty) + 1;
+            patient.setTokenNumber(tokenNumber);
+
+            int daysToAdd = APPOINTMENT_DAYS[random.nextInt(APPOINTMENT_DAYS.length)];
+            LocalDate futureDate = LocalDate.now().plusDays(daysToAdd);
+            patient.setNextAppointmentDate(futureDate.format(formatter));
+
+            // --- Conditional AI Prescription Logic ---
+            long existingCount = patientRepository.countByDoctorAssigned(assignedDoctor);
+            if (existingCount >= 5 || isCriticalDetected) {
+                String medSuggestions = PRESCRIBER_DATABASE.getOrDefault(bestSpecialty, "Standard symptomatic treatment");
+                String prefix = isCriticalDetected ? "⚠️ URGENT CARE ADVISED: " : "⚠️ AI SUGGESTED (Doctor Busy): ";
+                patient.setPrescription(prefix + medSuggestions);
+            } else {
+                patient.setPrescription("Pending Doctor Consultation");
+            }
         }
     }
 
     public Map<String, String> getEmergencyOnCall() {
         return EMERGENCY_ON_CALL;
-    }
-
-    private String getRandomDoctorForSpecialty(String specialty) {
-        String[] doctors = DOCTOR_ROSTER.getOrDefault(specialty, DOCTOR_ROSTER.get("General Physician"));
-        return doctors[new Random().nextInt(doctors.length)];
     }
 }

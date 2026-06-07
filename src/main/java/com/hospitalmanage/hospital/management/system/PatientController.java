@@ -21,9 +21,9 @@ public class PatientController {
     @GetMapping("/stats")
     public Map<String, Long> getStats() {
         Map<String, Long> stats = new HashMap<>();
-        stats.put("GP", patientRepository.countByDoctorSpecializationAndStatusNot("General Physician", "TREATED"));
-        stats.put("Cardio", patientRepository.countByDoctorSpecializationAndStatusNot("Cardiologist", "TREATED"));
-        stats.put("Peds", patientRepository.countByDoctorSpecializationAndStatusNot("Pediatrician", "TREATED"));
+        stats.put("GP", patientRepository.countByDoctorSpecializationAndStatus("General Physician", "REGISTERED"));
+        stats.put("Cardio", patientRepository.countByDoctorSpecializationAndStatus("Cardiologist", "REGISTERED"));
+        stats.put("Peds", patientRepository.countByDoctorSpecializationAndStatus("Pediatrician", "REGISTERED"));
         return stats;
     }
 

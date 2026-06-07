@@ -143,8 +143,8 @@
             generalTbody.innerHTML = '';
 
             patients.forEach(p => {
-                // Logic: Only show patients that are NOT yet TREATED in the dashboard queue
-                if (p.status === 'TREATED') return;
+                // Logic: Only show patients that are NOT yet TREATED or SCHEDULED for tomorrow in the dashboard queue
+                if (p.status === 'TREATED' || p.status === 'SCHEDULED') return;
                 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
