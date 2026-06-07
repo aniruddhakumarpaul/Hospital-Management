@@ -366,7 +366,7 @@
                                                 <option value="+971">+971 (UAE)</option>
                                             </select>
                                             <input type="text" id="phone" class="form-control" placeholder="10 Digits"
-                                                maxlength="10" required>
+                                                maxlength="10" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                         </div>
                                     </div>
                                     <div class="col-md-12">

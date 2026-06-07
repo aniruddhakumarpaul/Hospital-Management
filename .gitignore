@@ -34,3 +34,10 @@ build/
 
 ### Environment variables ###
 .env
+
+### Local Database and Logs ###
+data/
+node_modules/
+*.log
+compile_log.txt
+compile_log_small.txt

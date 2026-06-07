@@ -62,4 +62,36 @@ class HospitalManagementSystemApplicationTests {
         assertNotNull(registeredB);
         assertEquals("Patient US", registeredB.getName());
     }
+
+    @Test
+    void testTokenIncrementsConsecutively() {
+        patientRepository.deleteAll();
+
+        // Register 10 patients with "chest pain" to assign them to Cardiology
+        for (int i = 0; i < 10; i++) {
+            PatientDTO p = new PatientDTO();
+            p.setName("Patient " + i);
+            p.setAge(25);
+            p.setPhoneNumber("+91 999999900" + i);
+            p.setIllness("chest pain"); // Critical symptom, triggers Cardiology specialty
+            p.setEmergency(false);
+            p.setPaid(true); // set paid true to avoid unpaid balance enforcement blocks
+
+            PatientDTO registered = patientService.registerPatient(p);
+            assertNotNull(registered);
+            assertEquals(i + 1, registered.getTokenNumber(), "Token number should increment consecutively for the specialization");
+            System.out.println("TEST LOG: Registered " + registered.getName() + " -> Doc: " + registered.getDoctorAssigned() + ", Token: " + registered.getTokenNumber());
+        }
+
+        // Assert that there is no doctor who has multiple patients with the same token number
+        java.util.List<Patient> allPatients = patientRepository.findAll();
+        java.util.Map<String, java.util.Set<Integer>> doctorTokens = new java.util.HashMap<>();
+        for (Patient p : allPatients) {
+            String doc = p.getDoctorAssigned();
+            int tok = p.getTokenNumber();
+            doctorTokens.putIfAbsent(doc, new java.util.HashSet<>());
+            boolean added = doctorTokens.get(doc).add(tok);
+            assertTrue(added, "Duplicate token " + tok + " allocated to doctor " + doc);
+        }
+    }
 }

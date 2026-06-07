@@ -20,6 +20,14 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     // Find highest token number for a doctor safely avoiding deleted overlaps
     Optional<Patient> findFirstByDoctorAssignedOrderByTokenNumberDesc(String doctorAssigned);
 
+    // Get the maximum token number assigned to a doctor currently
+    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(MAX(p.tokenNumber), 0) FROM Patient p WHERE p.doctorAssigned = :doctorAssigned")
+    int findMaxTokenNumberByDoctorAssigned(@org.springframework.data.repository.query.Param("doctorAssigned") String doctorAssigned);
+
+    // Get the maximum token number assigned to a specialization currently
+    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(MAX(p.tokenNumber), 0) FROM Patient p WHERE p.doctorSpecialization = :doctorSpecialization")
+    int findMaxTokenNumberByDoctorSpecialization(@org.springframework.data.repository.query.Param("doctorSpecialization") String doctorSpecialization);
+
     // DB-level sorting for efficient dashboard rendering
     java.util.List<Patient> findAllByOrderByIsEmergencyDescTokenNumberAsc();
 

@@ -199,9 +199,7 @@ public class DoctorAIService {
         String assignedDoctor = getRandomDoctorForSpecialty(bestSpecialty);
         patient.setDoctorAssigned(assignedDoctor);
 
-        int tokenNumber = patientRepository.findFirstByDoctorAssignedOrderByTokenNumberDesc(assignedDoctor)
-                .map(Patient::getTokenNumber)
-                .orElse(0) + 1;
+        int tokenNumber = patientRepository.findMaxTokenNumberByDoctorSpecialization(bestSpecialty) + 1;
         patient.setTokenNumber(tokenNumber);
 
         Random random = new Random();
